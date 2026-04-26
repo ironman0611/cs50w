@@ -1,0 +1,129 @@
+
+.logo{
+    width: 300px;
+    height: 100px;
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.search-box{
+    border-radius:100px;
+    height:30px;
+    width:600px;
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.search-button{
+    border-radius:5px;
+    height:36px;
+    width:130px;
+    font-size: 14px;
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    border: 1px solid #f8f9fa;
+    top: 58%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+}
+.search-lucky{
+    border-radius:5px;
+    height:36px;
+    width:130px;
+    font-size: 14px;
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    border: 1px solid #f8f9fa;
+    top: 58%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+}
+.search-button1{
+    border-radius:5px;
+    height:36px;
+    width:130px;
+    font-size: 14px;
+    display: block;
+    margin: 0 auto;
+    position: absolute;
+    border: 1px solid #f8f9fa;
+    top: 58%;
+    left: 49.5%;
+    transform: translate(-50%, -50%);
+}
+.text{
+    color: #4285f4;
+    font: 16px / 16px Roboto, sans-serif;
+    position: absolute;
+    left: 56%;
+    top:39%;
+    bottom: 0;
+}
+.google-img{
+    position:absolute;
+    left:85%;
+    font-size:14px;
+    border-radius:5px;
+    border: 1px solid white;
+    padding:7px;
+}
+.google-img1{
+    position:absolute;
+    left:80%;
+    font-size:14px;
+    border-radius:5px;
+    border: 1px solid white;
+    padding:7px;
+}
+.search1{
+    width: 600px;
+    height: 30px;
+    border-radius: 100px;
+    display: block;
+    margin: 0 auto;
+}
+.td{
+    border: 20px solid #ffffff;
+}
+.adv_search{
+    position: absolute;
+    left: 63.5%;
+    bottom: 14%;
+    font-size: 12px;
+    height:35px;
+    width:120px;
+    background-color: #4285f4;
+    color: white;
+    border-color: #ffffff;
+}
+.table{
+    margin: 100px auto;
+}
+.back,
+.image,
+.adv {
+    margin: 10px;
+}
+.header{
+    color: #70757a;
+    font-size: 14px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+.header a {
+    color: inherit;
+    text-decoration: none;
+}
+.header a:hover {
+    text-decoration: underline;
+}

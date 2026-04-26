@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Advanced Search</title>
+    <link rel="stylesheet" href="searchstyle.css">
+</head> 
+<body>
+    <div class="header">
+        <div class="back">
+            <a href="index.html">To Search</a>
+        </div>
+        <div class="image">
+            <a href="search_image.html">To Image Search</a>
+        </div>
+    </div>
+    <form action="https://www.google.com/search" method="get">
+        <table class="table">
+            <tr>
+                <td class="td" style="font-weight: bold;">Find pages with...</td>
+                <td class="td"></td>
+                <td class="td" style="font-weight: bold;">To do this in the search box</td>
+            </tr>
+            <tr>
+                <td class="td">All these words</td>
+                <td class="td"><input type="text" name="as_q" class="search1"></input></td>
+                <td class="td">Type the important words:  tricolor rat terrier</td>
+            </tr>
+            <tr>
+                <td class="td">This exact word or phrase</td>
+                <td class="td"><input type="text" name="as_epq" class="search1"></input></td>
+                <td class="td">Put exact words in quotes:  "rat terrier"</td>
+            </tr>
+            <tr>
+                <td class="td">Any of these words</td>
+                <td class="td"><input type="text" name="as_oq" class="search1"></input></td>
+                <td class="td">Type OR between all the words you want:  miniature OR standard</td>
+            </tr>
+            <tr>
+                <td class="td">None of these words</td>
+                <td class="td"><input type="text" name="as_eq" class="search1"></input></td>
+                <td class="td">Put a minus sign just before words you don't want:  -rodent, -"Jack Russell"</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><input class="adv_search" type="submit" name="btnK" value="Advanced Search"/></td>
+            </tr>
+        </table>
+    </form>
+
+</body>
+</html>
