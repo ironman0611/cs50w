@@ -1,0 +1,112 @@
+{% extends 'tracker/base_app.html' %}
+{% block main %}
+<h1 class="h3 mb-4">Dashboard</h1>
+<p class="text-muted mb-4">Overview of your college applications.</p>
+
+<div class="row g-3 mb-2">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Total applications</div>
+                <div class="display-6 fw-semibold">{{ metric_total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">In progress</div>
+                <div class="display-6 fw-semibold text-primary">{{ metric_pending }}</div>
+                <div class="small text-muted">Researching or applying</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Submitted</div>
+                <div class="display-6 fw-semibold text-success">{{ metric_submitted }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Deadline within 30 days</div>
+                <div class="display-6 fw-semibold text-warning">{{ metric_deadline_soon }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Deferred</div>
+                <div class="h2 fw-semibold mb-0">{{ metric_deferred }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Accepted</div>
+                <div class="h2 fw-semibold text-success mb-0">{{ metric_accepted }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Rejected</div>
+                <div class="h2 fw-semibold text-secondary mb-0">{{ metric_rejected }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 shadow-sm border-danger border-opacity-25">
+            <div class="card-body">
+                <div class="text-muted small">Needs attention</div>
+                <div class="h2 fw-semibold text-danger mb-0">{{ metric_overdue }}</div>
+                <div class="small text-muted">Past deadline, not submitted or decided</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if applications %}
+<hr class="my-4">
+<h2 class="h5 mb-3">Upcoming deadlines</h2>
+<div class="row g-3">
+    {% for application in applications %}
+    <div class="col-sm-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ application.college.name }}</h5>
+                <p class="card-text small mb-2">
+                    <strong>Deadline:</strong> {{ application.college.application_deadline }}
+                    · <span class="countdown small" data-deadline="{{ application.college.application_deadline|date:'Y-m-d' }}">…</span>
+                </p>
+                <div class="mb-2">
+                    {% with next_url=request.get_full_path %}
+                    {% include "tracker/includes/application_status_form.html" %}
+                    {% endwith %}
+                </div>
+                <a class="small d-block mb-2" href="{% url 'college_detail' application.college_id %}#application-tasks">Checklist / tasks</a>
+                <span class="badge bg-{% if application.days_until_deadline < 0 %}dark{% elif application.days_until_deadline < 30 %}danger{% elif application.days_until_deadline < 60 %}warning{% else %}success{% endif %}">
+                    {% if application.days_until_deadline < 0 %}
+                    Deadline passed
+                    {% else %}
+                    {{ application.days_until_deadline }} days left
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% elif metric_total == 0 %}
+<p class="mt-4 text-muted">You have not started any applications yet. Browse <a href="{% url 'all_colleges' %}">all colleges</a> to add one.</p>
+{% endif %}
+{% endblock %}

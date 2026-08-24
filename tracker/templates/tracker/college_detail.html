@@ -1,0 +1,196 @@
+{% extends 'tracker/base_app.html' %}
+{% block main %}
+<article>
+    <header class="card college-detail-hero border-0 shadow-sm mb-4 bg-primary text-white">
+        <div class="card-body p-4 p-md-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-3">
+                    <li class="breadcrumb-item"><a href="{% url 'all_colleges' %}" class="link-light link-offset-2 link-underline link-underline-opacity-25">All colleges</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ college.name }}</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-2">{{ college.name }}</h1>
+            <p class="lead mb-3 mb-md-4 opacity-90">{{ college.location }}{% if college.state %}<span class="text-white-50"> · </span>{{ college.state }}{% endif %}</p>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="badge rounded-pill bg-white text-primary px-3 py-2">
+                    Application deadline {{ college.application_deadline|date:"F j, Y" }}
+                    · <span class="countdown" data-deadline="{{ college.application_deadline|date:'Y-m-d' }}">…</span>
+                </span>
+                {% if college.institution_type %}
+                <span class="badge rounded-pill bg-transparent border border-light text-white">{{ college.get_institution_type_display }}</span>
+                {% endif %}
+                {% if college.financial_aid_available %}
+                <span class="badge rounded-pill bg-success bg-opacity-75">Financial aid available</span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3 d-flex flex-wrap align-items-center gap-3 justify-content-between">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                {% if college.website %}
+                <a href="{{ college.website }}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Visit website</a>
+                {% endif %}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                {% if user_application %}
+                <span class="small text-muted">Your application status</span>
+                {% with application=user_application next_url=request.get_full_path %}
+                {% include "tracker/includes/application_status_form.html" %}
+                {% endwith %}
+                {% else %}
+                <form method="post" action="{% url 'apply_college' %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="college_id" value="{{ college.id }}">
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Add to my list</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">Campus &amp; setting</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row college-detail-dl mb-0">
+                        {% if college.campus_setting %}
+                        <div class="col-sm-6">
+                            <dt>Setting</dt>
+                            <dd>{{ college.get_campus_setting_display }}</dd>
+                        </div>
+                        {% endif %}
+                        {% if college.climate %}
+                        <div class="col-sm-6">
+                            <dt>Climate</dt>
+                            <dd>{{ college.get_climate_display }}</dd>
+                        </div>
+                        {% endif %}
+                        {% if college.campus_size %}
+                        <div class="col-sm-6">
+                            <dt>Size</dt>
+                            <dd>{{ college.get_campus_size_display }}</dd>
+                        </div>
+                        {% endif %}
+                        {% if college.sports_program %}
+                        <div class="col-sm-6">
+                            <dt>Athletics</dt>
+                            <dd>{{ college.get_sports_program_display }}</dd>
+                        </div>
+                        {% endif %}
+                    </dl>
+                    {% if not college.campus_setting and not college.climate and not college.campus_size and not college.sports_program %}
+                    <p class="text-muted small mb-0">No campus details have been added for this school yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">Student life</h2>
+                </div>
+                <div class="card-body">
+                    {% if college.meal_options %}
+                    <div class="mb-3">
+                        <h3 class="h6 text-muted text-uppercase small">Dining &amp; diet</h3>
+                        <p class="mb-0">{{ college.meal_options }}</p>
+                    </div>
+                    {% endif %}
+                    {% if college.housing_summary %}
+                    <div class="mb-3">
+                        <h3 class="h6 text-muted text-uppercase small">Housing</h3>
+                        <p class="mb-0">{{ college.housing_summary }}</p>
+                    </div>
+                    {% endif %}
+                    {% if college.extracurriculars %}
+                    <div class="mb-0">
+                        <h3 class="h6 text-muted text-uppercase small">Activities &amp; clubs</h3>
+                        <p class="mb-0">{{ college.extracurriculars }}</p>
+                    </div>
+                    {% endif %}
+                    {% if not college.meal_options and not college.housing_summary and not college.extracurriculars %}
+                    <p class="text-muted small mb-0">No student-life details have been added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if college.search_notes %}
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body p-4">
+            <h2 class="h5 mb-3">More about this school</h2>
+            <div class="text-body-secondary" style="white-space: pre-wrap;">{{ college.search_notes }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if user_application %}
+    <div class="card border-0 shadow-sm mt-4" id="application-tasks">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h2 class="h5 mb-0">Application checklist</h2>
+            <span class="small text-muted">Per-school tasks for your application</span>
+        </div>
+        <div class="card-body">
+            {% if tasks %}
+            <ul class="list-group list-group-flush mb-3">
+                {% for task in tasks %}
+                <li class="list-group-item px-0 task-row d-flex flex-wrap align-items-start justify-content-between gap-2 {% if task.completed %}task-completed{% endif %}">
+                    <div class="form-check flex-grow-1">
+                        <input
+                            class="form-check-input task-toggle"
+                            type="checkbox"
+                            id="task-{{ task.id }}"
+                            data-task-id="{{ task.id }}"
+                            {% if task.completed %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="task-{{ task.id }}">
+                            <span class="task-title fw-semibold">{{ task.title }}</span>
+                            {% if task.due_date %}
+                            <span class="small text-muted d-block">Due {{ task.due_date|date:"M j, Y" }}</span>
+                            {% endif %}
+                            {% if task.description %}
+                            <span class="small text-muted d-block">{{ task.description }}</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                    <form method="post" action="{% url 'delete_task' task.id %}" class="d-inline" onsubmit="return confirm('Delete this task?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted small">No tasks yet. Add essays, recommendation requests, or portal deadlines below.</p>
+            {% endif %}
+
+            <form method="post" action="{% url 'create_task' user_application.id %}" class="row g-2 align-items-end">
+                {% csrf_token %}
+                <div class="col-md-5">
+                    <label class="form-label small mb-0" for="task-title">Task</label>
+                    <input id="task-title" name="title" class="form-control form-control-sm" maxlength="200" required placeholder="e.g. Submit Common App essay">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small mb-0" for="task-due">Due date</label>
+                    <input id="task-due" name="due_date" type="date" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small mb-0" for="task-desc">Notes</label>
+                    <input id="task-desc" name="description" class="form-control form-control-sm" placeholder="Optional">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</article>
+{% endblock %}

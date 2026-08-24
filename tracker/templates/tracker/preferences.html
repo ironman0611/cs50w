@@ -1,0 +1,195 @@
+{% extends 'tracker/base_app.html' %}
+{% block main %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-1">My Preferences</h1>
+        <p class="text-muted mb-0">These criteria power the “Match my preferences” filter on All colleges.</p>
+    </div>
+</div>
+
+<form method="post">{% csrf_token %}
+<div class="row g-4">
+
+    <!-- College type -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">College Type</div>
+            <div class="card-body">
+                <select class="form-select" name="college_type_preferences">
+                    {% for value, label in profile.COLLEGE_TYPE_CHOICES %}
+                    <option value="{{ value }}"{% if profile.college_type_preferences == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meal plan -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Meal Plan</div>
+            <div class="card-body">
+                <select class="form-select" name="meal_plan_preference">
+                    {% for value, label in profile.MEAL_PLAN_CHOICES %}
+                    <option value="{{ value }}"{% if profile.meal_plan_preference == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preferred state -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Preferred State</div>
+            <div class="card-body">
+                <input type="text" class="form-control" name="preferred_state"
+                       value="{{ profile.preferred_state }}" placeholder="e.g., California">
+            </div>
+        </div>
+    </div>
+
+    <!-- Campus setting -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Campus Setting</div>
+            <div class="card-body">
+                <select class="form-select" name="preferred_setting">
+                    {% for value, label in profile.SETTING_CHOICES %}
+                    <option value="{{ value }}"{% if profile.preferred_setting == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distance -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Max Distance (miles)</div>
+            <div class="card-body">
+                <input type="number" class="form-control" name="max_distance_from_home"
+                       value="{{ profile.max_distance_from_home }}" min="0">
+                <div class="form-text">0 = no limit</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Climate -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Climate</div>
+            <div class="card-body">
+                <select class="form-select" name="preferred_climate">
+                    {% for value, label in profile.CLIMATE_CHOICES %}
+                    <option value="{{ value }}"{% if profile.preferred_climate == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campus size -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Campus Size</div>
+            <div class="card-body">
+                <select class="form-select" name="preferred_campus_size">
+                    {% for value, label in profile.SIZE_CHOICES %}
+                    <option value="{{ value }}"{% if profile.preferred_campus_size == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Housing -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Housing</div>
+            <div class="card-body">
+                <select class="form-select" name="preferred_housing">
+                    {% for value, label in profile.HOUSING_CHOICES %}
+                    <option value="{{ value }}"{% if profile.preferred_housing == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extracurriculars -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Extracurriculars</div>
+            <div class="card-body">
+                {% for value, label in extracurricular_choices %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="extracurriculars"
+                           value="{{ value }}" id="extra_{{ value }}"
+                           {% if value in saved_extracurriculars %}checked{% endif %}>
+                    <label class="form-check-label" for="extra_{{ value }}">{{ label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sports program -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold">Sports Program Level</div>
+            <div class="card-body">
+                <select class="form-select" name="sports_program_preference">
+                    {% for value, label in profile.SPORTS_PROGRAM_CHOICES %}
+                    <option value="{{ value }}"{% if profile.sports_program_preference == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPA -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Self-Assessed GPA</div>
+            <div class="card-body">
+                <input type="text" class="form-control" name="gpa_self_assessment"
+                       value="{{ profile.gpa_self_assessment }}" placeholder="e.g., 3.7">
+            </div>
+        </div>
+    </div>
+
+    <!-- SAT/ACT -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">SAT/ACT Score</div>
+            <div class="card-body">
+                <input type="number" class="form-control" name="sat_act_score"
+                       value="{% if profile.sat_act_score %}{{ profile.sat_act_score }}{% endif %}"
+                       min="0" placeholder="0 = N/A">
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Aid -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Financial Aid</div>
+            <div class="card-body">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           name="financial_aid_needed" id="fin_aid"
+                           {% if profile.financial_aid_needed %}checked{% endif %}>
+                    <label class="form-check-label" for="fin_aid">I need financial aid</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="mt-4">
+    <button type="submit" class="btn btn-primary">Save Preferences</button>
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'tracker/layout.html' %}
+{% load static %}
+{% block body %}
+<nav class="navbar navbar-dark bg-primary border-bottom">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-outline-light btn-sm d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Toggle sidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg>
+            </button>
+            <span class="navbar-brand mb-0">College Tracker</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a class="nav-link nav-link-username py-0 px-2" href="{% url 'preferences' %}" title="My Preferences">
+                {{ user.username }}
+            </a>
+            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">Log out</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Offcanvas sidebar for mobile -->
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <nav class="nav flex-column p-3 gap-1">
+            <a class="nav-link rounded {% if nav_active == 'dashboard' %}active fw-semibold{% endif %}" href="{% url 'index' %}">Dashboard</a>
+            <a class="nav-link rounded {% if nav_active == 'all_colleges' %}active fw-semibold{% endif %}" href="{% url 'all_colleges' %}">All colleges</a>
+            <a class="nav-link rounded {% if nav_active == 'my_colleges' %}active fw-semibold{% endif %}" href="{% url 'my_colleges' %}">My colleges</a>
+            <a class="nav-link rounded {% if nav_active == 'preferences' %}active fw-semibold{% endif %}" href="{% url 'preferences' %}">Preferences</a>
+        </nav>
+        <div class="px-3 pb-2 small text-muted text-uppercase">Colleges</div>
+        <div class="sidebar-college-list px-2 pb-3">
+            {% for c in nav_colleges %}
+            <a class="sidebar-college-link d-block py-1 px-2 rounded text-decoration-none text-truncate {% if college and college.pk == c.pk %}active fw-semibold{% endif %}" href="{% url 'college_detail' c.pk %}" title="{{ c.name }}">{{ c.name }}</a>
+            {% empty %}
+            {% if user.is_staff %}
+            <p class="px-3 small text-muted mb-0">No colleges yet. Add some in the admin.</p>
+            {% else %}
+            <p class="px-3 small text-muted mb-0">No colleges listed yet.</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="app-layout d-flex">
+    <!-- Desktop sidebar (hidden on mobile) -->
+    <aside class="app-sidebar border-end bg-white d-none d-lg-flex">
+        <nav class="nav flex-column p-3 gap-1">
+            <a class="nav-link rounded {% if nav_active == 'dashboard' %}active fw-semibold{% endif %}" href="{% url 'index' %}">Dashboard</a>
+            <a class="nav-link rounded {% if nav_active == 'all_colleges' %}active fw-semibold{% endif %}" href="{% url 'all_colleges' %}">All colleges</a>
+            <a class="nav-link rounded {% if nav_active == 'my_colleges' %}active fw-semibold{% endif %}" href="{% url 'my_colleges' %}">My colleges</a>
+            <a class="nav-link rounded {% if nav_active == 'preferences' %}active fw-semibold{% endif %}" href="{% url 'preferences' %}">Preferences</a>
+        </nav>
+        <div class="px-3 pb-2 small text-muted text-uppercase">Colleges</div>
+        <div class="sidebar-college-list px-2 pb-3">
+            {% for c in nav_colleges %}
+            <a class="sidebar-college-link d-block py-1 px-2 rounded text-decoration-none text-truncate {% if college and college.pk == c.pk %}active fw-semibold{% endif %}" href="{% url 'college_detail' c.pk %}" title="{{ c.name }}">{{ c.name }}</a>
+            {% empty %}
+            {% if user.is_staff %}
+            <p class="px-3 small text-muted mb-0">No colleges yet. Add some in the admin.</p>
+            {% else %}
+            <p class="px-3 small text-muted mb-0">No colleges listed yet.</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </aside>
+    <main class="app-main flex-grow-1 p-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if 'success' in message.tags %}success{% elif 'error' in message.tags %}danger{% elif 'warning' in message.tags %}warning{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% block main %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

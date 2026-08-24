@@ -1,0 +1,187 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.app-layout {
+    min-height: calc(100vh - 56px);
+}
+
+.app-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    max-height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-sidebar .nav-link {
+    color: #333;
+}
+
+.app-sidebar .nav-link:hover {
+    background-color: #f1f3f5;
+}
+
+.app-sidebar .nav-link.active {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+.navbar .nav-link-username {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.nav-link-username:hover {
+    color: #fff;
+}
+
+.sidebar-college-list {
+    overflow-y: auto;
+    flex: 1;
+    max-height: 50vh;
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.5rem;
+}
+
+.sidebar-college-link {
+    color: #495057;
+    font-size: 0.875rem;
+}
+
+.sidebar-college-link:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+}
+
+.sidebar-college-link.active {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+.college-detail-hero {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.college-detail-dl dt {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c757d;
+    margin-bottom: 0.15rem;
+}
+
+.college-detail-dl dd {
+    margin-bottom: 1rem;
+}
+
+.college-detail-dl dd:last-child {
+    margin-bottom: 0;
+}
+
+.app-main {
+    min-width: 0;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 56px);
+}
+
+/* Offcanvas sidebar styling */
+.offcanvas .nav-link {
+    color: #333;
+}
+
+.offcanvas .nav-link:hover {
+    background-color: #f1f3f5;
+}
+
+.offcanvas .nav-link.active {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+/* Mobile styles */
+@media (max-width: 991.98px) {
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .app-main {
+        padding: 1rem !important;
+    }
+
+    .college-detail-hero .card-body {
+        padding: 1.25rem !important;
+    }
+
+    .college-detail-hero h1 {
+        font-size: 1.4rem;
+    }
+
+    .college-detail-hero .lead {
+        font-size: 1rem;
+    }
+
+    /* Status dropdowns need to fit on small screens */
+    .form-select-sm {
+        min-width: 0 !important;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    h1.h3 {
+        font-size: 1.25rem;
+    }
+
+    .display-6 {
+        font-size: 1.75rem;
+    }
+
+    /* Stack list-group items vertically on phones */
+    .list-group-item .d-flex.flex-wrap.justify-content-between {
+        flex-direction: column;
+    }
+
+    /* Preferences cards go full width */
+    .col-md-6 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Better touch targets */
+    .btn-sm {
+        padding: 0.4rem 0.75rem;
+    }
+
+    /* Badge wrapping */
+    .badge {
+        font-size: 0.7rem;
+    }
+}
+
+.task-completed .task-title {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.countdown {
+    font-variant-numeric: tabular-nums;
+}

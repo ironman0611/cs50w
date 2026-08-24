@@ -1,0 +1,135 @@
+{% extends 'tracker/base_app.html' %}
+{% block main %}
+<h1 class="h3 mb-2">All colleges</h1>
+<p class="text-muted mb-2">Colleges added in the last 7 days are listed first. Search matches name, location, and profile-style fields (type, state, climate, activities, notes) using partial words—try <span class="text-body">ivy warm debate</span> or <span class="text-body">california halal</span>.</p>
+
+<form id="all-colleges-filter" method="get" action="{% url 'all_colleges' %}" class="row g-2 align-items-end mb-4">
+    <div class="col-md-6 col-lg-5">
+        <label class="form-label visually-hidden" for="q">Search</label>
+        <input id="q" class="form-control" type="search" name="q" value="{{ search_query }}" placeholder="Search colleges (name, location, type, programs, keywords…)" autocomplete="off">
+    </div>
+    <div class="col-md-4 col-lg-3">
+        <label class="form-label small text-muted mb-0" for="per_page">Colleges per page</label>
+        <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="10" {% if per_page_choice == '10' %}selected{% endif %}>10</option>
+            <option value="20" {% if per_page_choice == '20' %}selected{% endif %}>20</option>
+            <option value="all" {% if per_page_choice == 'all' %}selected{% endif %}>All</option>
+        </select>
+    </div>
+    <div class="col-12 col-lg-auto">
+        <div class="form-check mt-2 mt-lg-4">
+            <input class="form-check-input" type="checkbox" name="match_prefs" value="1" id="match_prefs" {% if match_prefs %}checked{% endif %} onchange="this.form.submit()">
+            <label class="form-check-label small" for="match_prefs">
+                Match my preferences
+                {% if not has_prefs %}
+                <span class="text-muted">(set them under <a href="{% url 'preferences' %}">Preferences</a>)</span>
+                {% endif %}
+            </label>
+        </div>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+    {% if search_query or match_prefs %}
+    <div class="col-12">
+        <a href="{% url 'all_colleges' %}?per_page={{ per_page_choice }}" class="small">Clear filters</a>
+        {% if match_prefs %}
+        <span class="small text-muted ms-2">Showing schools that fit your saved preferences{% if search_query %}, then your search keywords{% endif %}.</span>
+        {% endif %}
+    </div>
+    {% endif %}
+</form>
+
+{% if page_obj.paginator.count == 0 %}
+<p class="text-muted">
+    {% if search_query %}
+    No colleges match your search. Try different keywords or <a href="{% url 'all_colleges' %}?per_page={{ per_page_choice }}{% if match_prefs %}&match_prefs=1{% endif %}">clear the search</a>.
+    {% elif match_prefs %}
+    No colleges match your preferences. <a href="{% url 'preferences' %}">Edit preferences</a> or <a href="{% url 'all_colleges' %}?per_page={{ per_page_choice }}">browse the full catalog</a>.
+    {% else %}
+    No colleges are available yet.{% if user.is_staff %} Add some in the admin.{% endif %}
+    {% endif %}
+</p>
+{% else %}
+<p class="small text-muted mb-3">
+    Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} college{{ page_obj.paginator.count|pluralize }}
+    {% if page_obj.paginator.num_pages > 1 %}(page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}){% endif %}
+</p>
+<div class="list-group shadow-sm">
+    {% for college in page_obj %}
+    <div class="list-group-item list-group-item-action d-flex flex-wrap align-items-center justify-content-between gap-3 py-3">
+        <div class="flex-grow-1 min-w-0">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="{% url 'college_detail' college.id %}" class="fw-semibold link-primary text-decoration-none">{{ college.name }}</a>
+                {% if college.is_new_this_week %}
+                <span class="badge bg-info text-dark">New this week</span>
+                {% endif %}
+            </div>
+            <div class="small text-muted">{{ college.location }}{% if college.state %} · {{ college.state }}{% endif %} · Deadline {{ college.application_deadline }}</div>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+                {% if college.institution_type %}
+                <span class="badge rounded-pill bg-light text-dark border">{{ college.get_institution_type_display }}</span>
+                {% endif %}
+                {% if college.campus_setting %}
+                <span class="badge rounded-pill bg-light text-dark border">{{ college.get_campus_setting_display }}</span>
+                {% endif %}
+                {% if college.climate %}
+                <span class="badge rounded-pill bg-light text-dark border">{{ college.get_climate_display }}</span>
+                {% endif %}
+                {% if college.campus_size %}
+                <span class="badge rounded-pill bg-light text-dark border">{{ college.get_campus_size_display }}</span>
+                {% endif %}
+                {% if college.sports_program %}
+                <span class="badge rounded-pill bg-light text-dark border">{{ college.get_sports_program_display }}</span>
+                {% endif %}
+                {% if college.financial_aid_available %}
+                <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25">Financial aid</span>
+                {% endif %}
+            </div>
+            {% if college.website %}
+            <a href="{{ college.website }}" class="small" target="_blank" rel="noopener">Website</a>
+            {% endif %}
+        </div>
+        <div class="d-flex flex-column align-items-stretch align-items-md-end gap-2">
+            {% if college.user_application %}
+            <span class="small text-muted align-self-md-end">On your list</span>
+            {% with application=college.user_application next_url=request.get_full_path %}
+            {% include "tracker/includes/application_status_form.html" %}
+            {% endwith %}
+            {% else %}
+            <form method="post" action="{% url 'apply_college' %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="college_id" value="{{ college.id }}">
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Apply / track</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p class="list-group-item text-muted mb-0">No colleges on this page.</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if page_obj.has_other_pages %}
+<nav class="mt-4" aria-label="College list pages">
+    <ul class="pagination pagination-sm flex-wrap mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if match_prefs %}match_prefs=1&{% endif %}per_page={{ per_page_choice }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if search_query %}q={{ search_query|urlencode }}&{% endif %}{% if match_prefs %}match_prefs=1&{% endif %}per_page={{ per_page_choice }}&page={{ page_obj.next_page_number }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

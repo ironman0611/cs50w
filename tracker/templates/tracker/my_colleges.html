@@ -1,0 +1,59 @@
+{% extends 'tracker/base_app.html' %}
+{% block main %}
+<h1 class="h3 mb-3">My colleges</h1>
+<p class="text-muted mb-4">Colleges you are tracking or have applied to.</p>
+
+<form method="get" action="{% url 'my_colleges' %}" class="row g-2 mb-4">
+    <div class="col-md-8 col-lg-6">
+        <label class="visually-hidden" for="mq">Search</label>
+        <input id="mq" class="form-control" type="search" name="q" value="{{ search_query }}" placeholder="Search your colleges (name, location, type, keywords…)" autocomplete="off">
+    </div>
+    <div class="col-auto d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+    {% if search_query %}
+    <div class="col-12">
+        <a href="{% url 'my_colleges' %}" class="small">Clear search</a>
+    </div>
+    {% endif %}
+</form>
+
+{% if applications %}
+<div class="list-group shadow-sm">
+    {% for application in applications %}
+    <div class="list-group-item py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <div class="fw-semibold"><a href="{% url 'college_detail' application.college_id %}" class="link-dark text-decoration-none">{{ application.college.name }}</a></div>
+                <div class="small text-muted">{{ application.college.location }}</div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                {% with next_url=request.get_full_path %}
+                {% include "tracker/includes/application_status_form.html" %}
+                {% endwith %}
+                <form
+                    method="post"
+                    action="{% url 'remove_application' application.id %}"
+                    class="d-inline"
+                    onsubmit="return confirm('Remove this college from your list? You can add it again from All colleges.');"
+                >
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+            </div>
+        </div>
+        <div class="small mt-2">
+            <strong>Deadline:</strong> {{ application.college.application_deadline }}
+            ·
+            <span class="countdown" data-deadline="{{ application.college.application_deadline|date:'Y-m-d' }}">…</span>
+            ·
+            <a href="{% url 'college_detail' application.college_id %}#application-tasks">Tasks</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">{% if search_query %}No matches. <a href="{% url 'my_colleges' %}">Clear search</a> or {% endif %}Browse <a href="{% url 'all_colleges' %}">all colleges</a> to add one to your list.</p>
+{% endif %}
+{% endblock %}

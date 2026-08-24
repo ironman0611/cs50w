@@ -1,0 +1,27 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django
+db.sqlite3
+*.sqlite3
+staticfiles/
+media/
+
+# Local / tooling
+.DS_Store
+.env
+*.log
+.me50-*/
+.me50-*
+
+# Editor
+.idea/
+.vscode/
+*.swp
