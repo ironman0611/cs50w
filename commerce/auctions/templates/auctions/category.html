@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>{{ category }}</h2>
 
     {% for listing in listings %}
         <div>
@@ -11,12 +11,9 @@
             <h4><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h4>
             <p>{{ listing.description }}</p>
             <p>Price: ${{ listing.current_price }}</p>
-            {% if listing.category %}
-                <p>Category: {{ listing.category }}</p>
-            {% endif %}
         </div>
         <hr>
     {% empty %}
-        <p>No active listings.</p>
+        <p>No active listings in this category.</p>
     {% endfor %}
 {% endblock %}
