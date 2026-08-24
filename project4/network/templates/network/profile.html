@@ -1,69 +1,65 @@
 {% extends "network/layout.html" %}
 
-{% block title %}{{ page_heading }} — Social Network{% endblock %}
+{% block title %}{{ profile_user.username }} — Social Network{% endblock %}
 
 {% block body %}
-<div class="container " style="margin: 10px;">
-     <h3>{{ page_heading }}</h3>
+<div class="container" style="margin: 10px;">
+    <h3>{{ profile_user.username }}</h3>
+    <p>
+        <strong>Followers:</strong> {{ follower_count }}
+        &nbsp;|&nbsp;
+        <strong>Following:</strong> {{ following_count }}
+    </p>
+    {% if show_follow_button %}
+    <form action="{% url 'follow_toggle' profile_user.username %}" method="post" style="margin-bottom: 1rem;">
+        {% csrf_token %}
+        {% if is_following %}
+        <button type="submit" class="btn btn-secondary">Unfollow</button>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Follow</button>
+        {% endif %}
+    </form>
+    {% endif %}
 
-     {% if show_new_post_form %}
-     <div class="container " style="padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
-        <form action="{% url 'post' %}" method="post">
-            {% csrf_token %}
-            <div>
-                <label for="content">New Post</label>
-            </div>
-            <div class="form-group">
-                <textarea type="textarea" rows="4" style="width: 100%;" name="content"></textarea>
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Post">
-            </div>
-        </form>
-     </div>
-     {% endif %}
-
-     {% for post in posts %}
-     <div class="container js-post-card" data-post-id="{{ post.id }}" style=" margin-top: 10px; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+    <h4>Posts</h4>
+    {% for post in posts %}
+    <div class="container js-post-card" data-post-id="{{ post.id }}" style="margin-top: 10px; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
         <div>
             <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>
+        </div>
+        <div>
+            {% if user.is_authenticated and user == post.user %}
+            <button type="button" class="btn btn-sm btn-outline-secondary js-edit-button">Edit</button>
+            {% endif %}
+            <div class="js-post-content" style="margin-top: 10px;">{{ post.content }}</div>
+            <div class="js-edit-container" style="display: none; margin-top: 10px;">
+                <textarea class="form-control js-edit-textarea" rows="3"></textarea>
+                <div style="margin-top: 8px;">
+                    <button type="button" class="btn btn-sm btn-primary js-save-button">Save</button>
+                    <button type="button" class="btn btn-sm btn-light js-cancel-button">Cancel</button>
+                </div>
             </div>
             <div>
-                {% if user.is_authenticated and user == post.user %}
-                <button type="button" class="btn btn-sm btn-outline-secondary js-edit-button">Edit</button>
-                {% endif %}
-                <div class="js-post-content" style="margin-top: 10px;">
-                    {{ post.content }}
-                </div>
-                <div class="js-edit-container" style="display: none; margin-top: 10px;">
-                    <textarea class="form-control js-edit-textarea" rows="3"></textarea>
-                    <div style="margin-top: 8px;">
-                        <button type="button" class="btn btn-sm btn-primary js-save-button">Save</button>
-                        <button type="button" class="btn btn-sm btn-light js-cancel-button">Cancel</button>
-                    </div>
-                </div>
-                <div>
-                    <small
-                        class="text-muted js-local-timestamp"
-                        data-timestamp="{{ post.timestamp|date:'c' }}"
-                    >
-                        {{ post.timestamp }}
-                    </small>
-                </div>
-                <div>
-                    {% if user.is_authenticated %}
-                    <button type="button" class="btn btn-sm btn-outline-primary js-like-button">
-                        {% if post.id in liked_post_ids %}Unlike{% else %}Like{% endif %}
-                    </button>
-                    {% endif %}
-                    <span class="js-like-count">{{ post.liked_by.count }}</span> likes
-                </div>
-                <div>
-                    Comment
-                </div>
+                <small
+                    class="text-muted js-local-timestamp"
+                    data-timestamp="{{ post.timestamp|date:'c' }}"
+                >
+                    {{ post.timestamp }}
+                </small>
             </div>
-     </div>
-     {% endfor %}
+            <div>
+                {% if user.is_authenticated %}
+                <button type="button" class="btn btn-sm btn-outline-primary js-like-button">
+                    {% if post.id in liked_post_ids %}Unlike{% else %}Like{% endif %}
+                </button>
+                {% endif %}
+                <span class="js-like-count">{{ post.liked_by.count }}</span> likes
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No posts yet.</p>
+    {% endfor %}
 
     <div class="d-flex justify-content-between mt-3">
         <div>
